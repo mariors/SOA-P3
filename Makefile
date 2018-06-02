@@ -1,10 +1,12 @@
 CC = gcc
 MK_DIR = mkdir
 HEADERS = -Iheaders/
+GTKFLAGS = `pkg-config  --libs --cflags gtk+-3.0`
 LIBS_FOLDER_FLAG = -Llib/
 LIBS_FLAG = 
 
-C_FLAGS = -Wall -lm -Os -lrt $(HEADERS) \
+C_FLAGS = -Wall -lm -Os -lrt $(GTKFLAGS) \
+	$(HEADERS) \
 	$(LIBS_FOLDER_FLAG) \
 	$(LIBS_FLAG)
 

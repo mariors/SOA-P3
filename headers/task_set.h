@@ -10,6 +10,7 @@
 
 
 typedef struct task{
+    int id; // task id
     int e; // execution time
     int p; // task's lapse
 } task;
