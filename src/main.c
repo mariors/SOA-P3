@@ -1,6 +1,9 @@
 #include <stdio.h>
 
-int main() {
+#include "../headers/main_window.h"
+
+int main(int argc, char **argv) {
     printf("Hello, World!\n");
+    lunch_window(argc, argv);
     return 0;
 }
