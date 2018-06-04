@@ -7,11 +7,12 @@
 
 #include <gtk/gtk.h>
 #include "task_set.h"
+#include "scheduler.h"
 
 enum {
     LIST_TASK_PERIOD,
     LIST_TASK_EXECUTION_TIME,
-    LIST_TASK_PRIORITY,
+    //LIST_TASK_PRIORITY,
     N_COLUMNS
 };
 
@@ -59,7 +60,7 @@ static void add_btn_clicked(GtkWidget *widget, gpointer data) {
     gtk_list_store_set(GTK_LIST_STORE(((add_click_data *) data)->store), &iter,
                        LIST_TASK_PERIOD, gtk_entry_get_text((GtkEntry *) ((add_click_data *) data)->period),
                        LIST_TASK_EXECUTION_TIME, gtk_entry_get_text((GtkEntry *) ((add_click_data *) data)->excec_time),
-                       LIST_TASK_PRIORITY, gtk_entry_get_text((GtkEntry *) ((add_click_data *) data)->priority),
+                       //LIST_TASK_PRIORITY, gtk_entry_get_text((GtkEntry *) ((add_click_data *) data)->priority),
                        -1);
 
 }
@@ -96,32 +97,41 @@ static void run_btn_clicked(GtkWidget *widget, gpointer data) {
         gtk_tree_model_get(GTK_TREE_MODEL(list), &iter,
                            LIST_TASK_PERIOD, &period_str,
                            LIST_TASK_EXECUTION_TIME, &exec_time_str,
-                           LIST_TASK_PRIORITY, &priority_str,
+                           //LIST_TASK_PRIORITY, &priority_str,
                            -1);
 
         int period = atoi(period_str);
         int exec_time = atoi(exec_time_str);
-        int priority = atoi(priority_str);
+        //int priority = atoi(priority_str);
 
         set.tasks[it].id = it;
         set.tasks[it].e = exec_time;
         set.tasks[it].p = period;
-        set.tasks[it].prio = priority;
+        //set.tasks[it].prio = priority;
 
         it++;
 
         out = gtk_tree_model_iter_next(GTK_TREE_MODEL(list), &iter);
     }
 
-    gboolean run_rm = gtk_toggle_button_get_active(&(to_run_rm->toggle_button));
-    gboolean run_edf = gtk_toggle_button_get_active(&(to_run_edf->toggle_button));
-    gboolean run_llf = gtk_toggle_button_get_active(&(to_run_llf->toggle_button));
+    set.is_rm = gtk_toggle_button_get_active(&(to_run_rm->toggle_button));
+    set.is_edf = gtk_toggle_button_get_active(&(to_run_edf->toggle_button));
+    set.is_llf = gtk_toggle_button_get_active(&(to_run_llf->toggle_button));
 
     int single_slide = gtk_combo_box_get_active(mode) == 0;
 
+    results res = schedule(&set);
 
+    scheduler_result_item* steps = res.rm_result.simulation;
+    int length = res.rm_result.simulation_length;
+    printf("Length = %d\n", length);
 
-    // TODO: Add all crap calling here?
+    for(int i = 0; i < length; i++){
+        scheduler_result_item step = *(steps + i);
+        printf("\nTiempo t = %d\n", step.time);
+        printf("Current = %d\n", step.running_task_id);
+        printf("Status = %d\n", step.status);
+    }
 
 }
 
@@ -174,7 +184,7 @@ static void init(int argc, char **argv) {
 
     gtk_grid_attach(GTK_GRID (grid), checkRM, 0, 4, 1, 1);
     gtk_grid_attach(GTK_GRID (grid), checkEDF, 1, 4, 1, 1);
-    gtk_grid_attach(GTK_GRID (grid), checkLLF, 2, 4, 1, 1);
+    gtk_grid_attach(GTK_GRID (grid), checkLLF, 0, 5, 1, 1);
 
     GtkWidget *combo = gtk_combo_box_text_new();
     gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT (combo), "One slide");
@@ -182,7 +192,7 @@ static void init(int argc, char **argv) {
 
     gtk_combo_box_set_active(GTK_COMBO_BOX (combo), 0);
 
-    gtk_grid_attach(GTK_GRID (grid), combo, 3, 4, 1, 1);
+    gtk_grid_attach(GTK_GRID (grid), combo, 1, 5, 1, 1);
 
 
     create_list_view(renderer, column, &store, &list);
@@ -190,7 +200,7 @@ static void init(int argc, char **argv) {
     gtk_grid_attach(GTK_GRID (grid), list, 3, 0, 5, 4);
 
     GtkWidget *run_btn = gtk_button_new_with_label("RUN!");
-    gtk_grid_attach(GTK_GRID (grid), run_btn, 0, 5, 3, 1);
+    gtk_grid_attach(GTK_GRID (grid), run_btn, 0, 6, 3, 1);
 
 
     add_click_data *add_data = (add_click_data *) malloc(sizeof(add_click_data));
@@ -225,7 +235,7 @@ static void init(int argc, char **argv) {
 static void
 create_list_view(GtkCellRenderer *renderer, GtkTreeViewColumn *column, GtkListStore **store, GtkWidget **list) {
 
-    (*store) = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+    (*store) = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING/*, G_TYPE_STRING*/);
     (*list) = gtk_tree_view_new();
 
     renderer = gtk_cell_renderer_text_new();
@@ -237,9 +247,9 @@ create_list_view(GtkCellRenderer *renderer, GtkTreeViewColumn *column, GtkListSt
                                                       NULL);
     gtk_tree_view_append_column(GTK_TREE_VIEW((*list)), column);
 
-    renderer = gtk_cell_renderer_text_new();
-    column = gtk_tree_view_column_new_with_attributes("PRIORITY", renderer, "text", LIST_TASK_PRIORITY, NULL);
-    gtk_tree_view_append_column(GTK_TREE_VIEW((*list)), column);
+//    renderer = gtk_cell_renderer_text_new();
+//    column = gtk_tree_view_column_new_with_attributes("PRIORITY", renderer, "text", LIST_TASK_PRIORITY, NULL);
+//    gtk_tree_view_append_column(GTK_TREE_VIEW((*list)), column);
 
     gtk_tree_view_set_model(GTK_TREE_VIEW((*list)), GTK_TREE_MODEL((*store)));
 

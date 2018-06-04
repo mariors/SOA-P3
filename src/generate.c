@@ -35,6 +35,7 @@ void generate_full_document(){
     document_class(fp);
     fprintf(fp, "\n");
     packages_document(fp);
+    theme_document(fp);
     fprintf(fp, "\n");
     init_document(fp);
     fprintf(fp, "\n");

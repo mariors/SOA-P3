@@ -13,7 +13,7 @@ typedef struct task{
     int id; // task id
     int e; // execution time
     int p; // task's lapse
-    int prio; // priority
+    //int prio; // priority
 } task;
 
 typedef struct task_set{
