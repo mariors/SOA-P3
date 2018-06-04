@@ -74,6 +74,8 @@ void init_document(FILE *fp, results* res){
  
     }else{ // SEPARATE SLICE
         generate_slide_single_algorithm(fp,"RM", res->rm_result);
+        generate_slide_single_algorithm(fp,"EDF", res->edf_result);
+        generate_slide_single_algorithm(fp,"LLF", res->llf_result);
     }
     
     fprintf(fp,"\\end{document}");
@@ -126,12 +128,12 @@ void end_table(FILE *fp){
 }
 
 void generate_step_number(FILE *fp,scheduler_result result){
-    fprintf(fp,"\\cline{2-%d}",result.fix_length+1+1);
-    for(int i = 0; i<result.fix_length+1;i++){
+    fprintf(fp,"\\cline{2-%d}",result.fix_length+1+1+1);
+    for(int i = 0; i<result.fix_length+2;i++){
         if(i==0)
             fprintf(fp,"& %d",0);
         else
-            fprintf(fp,"& %d",result.simulation[i].time);
+            fprintf(fp,"& %d",result.simulation[i-1].time);
     }
     fprintf(fp,"\\\\ \n");
 }
@@ -151,32 +153,34 @@ void generate_timeline_task(FILE *fp,scheduler_result result,int actual_task, in
     fprintf(fp,"\\cline{1-%d}",total_steps+1);
     int id = result.tasks->tasks[actual_task].id;
     int period = result.tasks->tasks[actual_task].p;
-    
+
     fprintf(fp,"t%d",id);
 
     const char* deadline = "*";
-    
+
+
     for(int i = -1; i<total_steps-1;i++){
         fprintf(fp,"& ");
-        
-        
+
         if(i==-1)
             fprintf(fp,"%s", deadline);
         else{
             const char* color = get_color_task(id);
-            if(result.simulation[i].running_task_id == id)
-                fprintf("\\cellcolor{%s}",color); 
-            
+            if(result.simulation[i].running_task_id == id && actual_step >= result.simulation[i].time )
+                fprintf(fp,"\\cellcolor{%s}",color);
+
             fprintf(fp,"%s", result.simulation[i].time%period==0? deadline: "");
         }
-            
+
     }
     fprintf(fp,"\\\\ \n");
 }
 
 void generate_table_single_algorithm(FILE *fp, scheduler_result result, int actual_step){
-    int total_steps = result.fix_length+1;// 0 no esta contemplado 
+    int total_steps = result.fix_length+2;// 0 no esta contemplado
     int total_task = result.task_size;
+
+
 
     begin_table(fp,total_steps);
     generate_step_number(fp,result);
@@ -191,8 +195,14 @@ void generate_slide_single_algorithm(FILE *fp, const char* title, scheduler_resu
     printf("Generating for %s\n",title);
     printf("TOTAL length: %d\n",result.simulation_length);
     printf("FIX length: %d\n",result.fix_length);
-    for(int step = 0; step < result.fix_length+1; step++){
+    for(int step = 0; step < result.fix_length+2; step++){
         begin_slice(fp,title);
+
+        // TODO: delete!
+            fprintf(fp,"sadasd");
+            fprintf(fp,"%d\n",result.simulation[step].status);
+        //
+
         generate_table_single_algorithm(fp,result,step);
         end_slice(fp);
     }

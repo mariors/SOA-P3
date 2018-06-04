@@ -8,12 +8,14 @@
 #define CRASHED 3
 
 void calculate_fix_length(scheduler_result *r){
+    r->fix_length = r->simulation_length -1;
     for(int i = 0; i < r->simulation_length; i++){
         if(r->simulation[i].status == FINISHED || r->simulation[i].status == CRASHED){
             r->fix_length = i;
             break;
         }
     }
+
 }
 
 results schedule(task_set *set) {
