@@ -93,17 +93,17 @@ void slide_schedulability(FILE *fp) {
 	fprintf(fp, "\\begin{frame}\n");
 	fprintf(fp, "\\frametitle{Test de schedulability}\n");
 	fprintf(fp, "\\begin{block}{RM: Rate Monotonic}\n");
-	fprintf(fp, "$U = \\sum^n_{i=1}{\\frac{C_i}{T_i}\\leq n(2^{1/n}-1))}$");
+	fprintf(fp, "$U = \\sum^n_{i=1}{\\frac{C_i}{T_i}\\leq n(2^{1/n}-1))}$\n\n");
+
+	fprintf(fp, "Under Rate Monotonic, $U = 0.5 < 0.6$. This task set is executable|not sure if executable");//TODO: ADD SCHEDULABLE? UNDER EACH.
+
 	fprintf(fp, "\\end{block}\n");
 	fprintf(fp, "\\begin{block}{EDF and LLF}\n");
-	fprintf(fp, "$U = \\sum^n_{i=1}{\\frac{C_i}{T_i}\\leq 1}$");
+	fprintf(fp, "$U = \\sum^n_{i=1}{\\frac{C_i}{T_i}\\leq 1}$\n\n");
+
+	fprintf(fp, "Under EDF or LLF $U=0.8 < 1.0$ This task set is executable|not executable");//TODO: ADD SCHEDULABLE? UNDER EACH.
+
 	fprintf(fp, "\\end{block}\n");
-//	fprintf(fp, "\\begin{block}{LLF: Least Laxity First}\n");
-//	fprintf(fp, "$U = \\sum^n_{i=1}{\\frac{C_i}{T_i}\\leq 1}$");
-
-
-//	fprintf(fp, "\\end{block}\n");
-	//TODO: ADD SCHEDULABLE? UNDER EACH.
 	fprintf(fp, "\\end{frame}\n");
 }
 
