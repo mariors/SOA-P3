@@ -71,10 +71,11 @@ void init_document(FILE *fp, results* res){
     slice_algoritmos(fp);
     slide_schedulability(fp,res);
     if(res->all_same_sile){ // ALL IN THE SAME SLICE
-
+        generate_slide_multiples_algorithm(fp,"Multi", res->rm_result,res->edf_result,res->llf_result);
     }else{ // SEPARATE SLICE
-        printf("Test");
-        generate_slice_only_RM(fp, res->rm_result);
+        generate_slide_single_algorithm(fp,"RM", res->rm_result);
+        generate_slide_single_algorithm(fp,"EDF", res->edf_result);
+        generate_slide_single_algorithm(fp,"LLF", res->llf_result);
     }
     
     fprintf(fp,"\\end{document}");
@@ -126,10 +127,13 @@ void end_table(FILE *fp){
     fprintf(fp,"\\end{tabular}\n");
 }
 
-void generate_step_number(FILE *fp,int total_steps){
-    fprintf(fp,"\\cline{2-%d}",total_steps+1);
-    for(int i = 0; i<total_steps;i++){
-        fprintf(fp,"& %d",i);
+void generate_step_number(FILE *fp,scheduler_result result){
+    fprintf(fp,"\\cline{2-%d}",result.fix_length+1+1+1);
+    for(int i = 0; i<result.fix_length+2;i++){
+        if(i==0)
+            fprintf(fp,"& %d",0);
+        else
+            fprintf(fp,"& %d",result.simulation[i-1].time);
     }
     fprintf(fp,"\\\\ \n");
 }
@@ -145,38 +149,79 @@ char *get_color_task(int id){
     }
 }
 
-void generate_timeline_task(FILE *fp,int id,int period, int total_steps){
+void generate_timeline_task(FILE *fp,scheduler_result result,int actual_task, int actual_step,int total_steps){
     fprintf(fp,"\\cline{1-%d}",total_steps+1);
+    int id = result.tasks->tasks[actual_task].id;
+    int period = result.tasks->tasks[actual_task].p;
+
     fprintf(fp,"t%d",id);
+
     const char* deadline = "*";
-    for(int i = 0; i<total_steps;i++){
+
+
+    for(int i = -1; i<total_steps-1;i++){
+        fprintf(fp,"& ");
+
         const char* color = get_color_task(id);
-        fprintf(fp,"& \\cellcolor{%s} %s", color, i%period==0? deadline: "");
+        if(result.simulation[i+1].running_task_id == id && actual_step >= result.simulation[i+1].time )
+            fprintf(fp,"\\cellcolor{%s}",color);
+
+        if(i==-1)
+            fprintf(fp,"%s", deadline);
+        else{
+
+            fprintf(fp,"%s", result.simulation[i].time%period==0? deadline: "");
+        }
+
     }
     fprintf(fp,"\\\\ \n");
 }
 
-void generate_slice_only_RM(FILE *fp, scheduler_result res){
-    begin_slice(fp,"RM");
-    printf("rm");
+void generate_table_single_algorithm(FILE *fp, scheduler_result result, int actual_step){
+    int total_steps = result.fix_length+2;// 0 no esta contemplado
+    int total_task = result.task_size;
 
-    int total_steps = res.simulation_length;
-    int total_task = res.task_size;
-//
+
+
     begin_table(fp,total_steps);
-    generate_step_number(fp,total_steps);
-//
+    generate_step_number(fp,result);
     for(int t = 0; t < total_task; t++){
-        printf("Generation timeline");
-        printf("%d %d\n",res.tasks->tasks[t].id,res.tasks->tasks[t].p);
-        generate_timeline_task(fp,res.tasks->tasks[t].id,res.tasks->tasks[t].p,total_steps);
+        generate_timeline_task(fp,result, t, actual_step, total_steps);
     }
-//
     fprintf(fp,"\\cline{1-%d}",total_steps+1);
-//
     end_table(fp);
-    end_slice(fp);
 }
+
+void generate_slide_single_algorithm(FILE *fp, const char* title, scheduler_result result){
+    printf("Generating for %s\n",title);
+    for(int step = 0; step < result.fix_length+2; step++){
+        begin_slice(fp,title);
+
+        generate_table_single_algorithm(fp,result,step);
+        end_slice(fp);
+    }
+}
+
+int max(int a, int b){
+    if(a>b)
+        return a;
+    return b;
+}
+
+void generate_slide_multiples_algorithm(FILE *fp, const char* title, scheduler_result rm, scheduler_result edf, scheduler_result llf){
+    printf("Generating for %s\n",title);
+    int max_fl = max(rm.fix_length, max(edf.fix_length,llf.fix_length));
+    for(int step = 0; step < max_fl+2; step++){
+        begin_slice(fp,title);
+
+        generate_table_single_algorithm(fp,rm,step);
+        generate_table_single_algorithm(fp,edf,step);
+        generate_table_single_algorithm(fp,llf,step);
+        end_slice(fp);
+    }
+}
+
+
 
 void slide_schedulability(FILE *fp, results* res) {
 	fprintf(fp, "\\begin{frame}\n");
