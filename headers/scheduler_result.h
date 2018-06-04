@@ -23,6 +23,7 @@ typedef struct scheduler_result {
 
     int is_schedulable;
     task_set *tasks;
+    int task_size;
 
     scheduler_result_item* simulation;
     int simulation_length; // could be calculated as MCM of task's lapse
@@ -39,6 +40,7 @@ typedef struct results {
     scheduler_result edf_result;
     scheduler_result llf_result;
 
+    int all_same_sile;
 
 } results;
 

@@ -6,14 +6,16 @@
 #define PROJECT3_MAIN_WINDOW_H
 
 #include <gtk/gtk.h>
+#include <stdbool.h>
 #include "task_set.h"
 #include "scheduler.h"
+#include "generate.h"
 
 enum {
     LIST_TASK_PERIOD,
     LIST_TASK_EXECUTION_TIME,
     //LIST_TASK_PRIORITY,
-    N_COLUMNS
+            N_COLUMNS
 };
 
 typedef struct add_btn_click_data {
@@ -40,6 +42,15 @@ typedef struct run_btn_click_data {
 
 } run_click_data;
 
+static bool validate_only_numbers(const gchar *str) {
+    int length = strlen(str);
+    for (int i = 0; i < length; i++) {
+        if (str[i] < 48 || str[i] > 57)
+            return 1;
+    }
+    return 0;
+}
+
 static void destroy(GtkWidget *widget, gpointer data) {
     gtk_main_quit();
 }
@@ -52,17 +63,26 @@ static void set_window(GtkWidget *window) {
 
 }
 
+
 static void add_btn_clicked(GtkWidget *widget, gpointer data) {
     GtkTreeIter iter;
 
+    const gchar *period_str = gtk_entry_get_text((GtkEntry *) ((add_click_data *) data)->period);
+    const gchar *excec_time_str = gtk_entry_get_text((GtkEntry *) ((add_click_data *) data)->excec_time);
+
+    if (validate_only_numbers(period_str) ||
+        validate_only_numbers(excec_time_str))
+        return;
+
     gtk_list_store_append(GTK_LIST_STORE(((add_click_data *) data)->store), &iter);
     gtk_list_store_set(GTK_LIST_STORE(((add_click_data *) data)->store), &iter,
-                       LIST_TASK_PERIOD, gtk_entry_get_text((GtkEntry *) ((add_click_data *) data)->period),
-                       LIST_TASK_EXECUTION_TIME, gtk_entry_get_text((GtkEntry *) ((add_click_data *) data)->excec_time),
-                       //LIST_TASK_PRIORITY, gtk_entry_get_text((GtkEntry *) ((add_click_data *) data)->priority),
+                       LIST_TASK_PERIOD, period_str,
+                       LIST_TASK_EXECUTION_TIME, excec_time_str,
                        -1);
 
 }
+
+
 
 static void run_btn_clicked(GtkWidget *widget, gpointer data) {
 
@@ -96,17 +116,14 @@ static void run_btn_clicked(GtkWidget *widget, gpointer data) {
         gtk_tree_model_get(GTK_TREE_MODEL(list), &iter,
                            LIST_TASK_PERIOD, &period_str,
                            LIST_TASK_EXECUTION_TIME, &exec_time_str,
-                           //LIST_TASK_PRIORITY, &priority_str,
                            -1);
 
         int period = atoi(period_str);
         int exec_time = atoi(exec_time_str);
-        //int priority = atoi(priority_str);
 
-        set.tasks[it].id = it;
+        set.tasks[it].id = it+1;
         set.tasks[it].e = exec_time;
         set.tasks[it].p = period;
-        //set.tasks[it].prio = priority;
 
         it++;
 
@@ -121,17 +138,9 @@ static void run_btn_clicked(GtkWidget *widget, gpointer data) {
 
     results res = schedule(&set);
 
-    scheduler_result_item* steps = res.rm_result.simulation;
-    int length = res.rm_result.simulation_length;
-    printf("Length = %d\n", length);
+    res.all_same_sile = single_slide;
 
-    for(int i = 0; i < length; i++){
-        scheduler_result_item step = *(steps + i);
-        printf("\nTiempo t = %d\n", step.time);
-        printf("Current = %d\n", step.running_task_id);
-        printf("Status = %d\n", step.status);
-    }
-
+    init_documentation(&res);
 }
 
 
@@ -227,7 +236,7 @@ static void init(int argc, char **argv) {
 static void
 create_list_view(GtkCellRenderer *renderer, GtkTreeViewColumn *column, GtkListStore **store, GtkWidget **list) {
 
-    (*store) = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING/*, G_TYPE_STRING*/);
+    (*store) = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING, G_TYPE_STRING);
     (*list) = gtk_tree_view_new();
 
     renderer = gtk_cell_renderer_text_new();
@@ -238,10 +247,6 @@ create_list_view(GtkCellRenderer *renderer, GtkTreeViewColumn *column, GtkListSt
     column = gtk_tree_view_column_new_with_attributes("EXECUTION_TIME", renderer, "text", LIST_TASK_EXECUTION_TIME,
                                                       NULL);
     gtk_tree_view_append_column(GTK_TREE_VIEW((*list)), column);
-
-//    renderer = gtk_cell_renderer_text_new();
-//    column = gtk_tree_view_column_new_with_attributes("PRIORITY", renderer, "text", LIST_TASK_PRIORITY, NULL);
-//    gtk_tree_view_append_column(GTK_TREE_VIEW((*list)), column);
 
     gtk_tree_view_set_model(GTK_TREE_VIEW((*list)), GTK_TREE_MODEL((*store)));
 

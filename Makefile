@@ -12,6 +12,7 @@ C_FLAGS = -Wall -lm -Os -lrt $(GTKFLAGS) \
 
 SRC_DIR = src
 BIN_DIR = bin
+OUT_DIR = out
 
 MAIN_FILE = project.o
 
@@ -31,3 +32,5 @@ clean:
 	@echo CLEANING STEP!
 	$(RM) -rf $(BIN_DIR)/*.o $(BIN_DIR)
 	$(MK_DIR) $(BIN_DIR)
+	$(RM) -rf $(OUT_DIR)/*.o $(OUT_DIR)
+	$(MK_DIR) $(OUT_DIR)

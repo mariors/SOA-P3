@@ -23,7 +23,7 @@ results schedule(task_set *set) {
 scheduler_result schedule_old(task_set *set, Algorithm algorithm) {
     scheduler_result res = scheduler_simulator(set, algorithm);
     int is_sched = is_schedulable(set, algorithm);
-    scheduler_result result = {.simulation = res.simulation, .simulation_length = res.simulation_length, .tasks = set, .is_schedulable = is_sched};
+    scheduler_result result = {.simulation = res.simulation, .simulation_length = res.simulation_length, .tasks = set, .is_schedulable = is_sched, .task_size = set->size};
     return result;
 }
 
@@ -102,7 +102,7 @@ scheduler_result scheduler_simulator(task_set *set, Algorithm algorithm) {
             moments[t - 1] = moment;
             interesting_moments[t - 1] = 1;
 //            scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
-            scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched};
+            scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched, .task_size = size};
             return result;
         }
 
@@ -116,7 +116,7 @@ scheduler_result scheduler_simulator(task_set *set, Algorithm algorithm) {
                 moments[t - 1] = moment;
                 interesting_moments[t - 1] = 1;
 //                scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
-                scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched};
+                scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched, .task_size = size};
                 return result;
             } else {
                 scheduler_result_item moment = make_moment(arriving, ids, size, t, current_idx, -1, RUNNING);
@@ -156,7 +156,7 @@ scheduler_result scheduler_simulator(task_set *set, Algorithm algorithm) {
                 moments[t - 1] = moment;
                 interesting_moments[t - 1] = 1;
 //                scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
-                scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched};
+                scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched, .task_size = size};
                 return result;
             }
 
@@ -177,7 +177,7 @@ scheduler_result scheduler_simulator(task_set *set, Algorithm algorithm) {
                     moments[t - 1] = moment;
                     interesting_moments[t - 1] = 1;
 //                    scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
-                    scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched};
+                    scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched, .task_size = size};
                     return result;
                 }
             }
@@ -192,7 +192,7 @@ scheduler_result scheduler_simulator(task_set *set, Algorithm algorithm) {
         }
     }
 //    scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
-    scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched};
+    scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched, .task_size = size};
     return result;
 }
 

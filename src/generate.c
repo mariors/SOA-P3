@@ -1,9 +1,7 @@
 #include "../headers/generate.h"
 
-#include <stdio.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include <stdio.h>
 
 #define TEX_FILE "out/soa-p3.tex"
 #define LATEX_COMMAND "/usr/bin/pdflatex"
@@ -18,18 +16,19 @@
 #define COLOR_TASK_5 "orange"
 #define COLOR_TASK_6 "teal"
 
-void init_documentation(){
+void init_documentation(results* res){
     printf("Generating tex\n");
-    generate_full_document();
+    generate_full_document(res);
     printf("Generating pdf\n");
     generate_pdf();
     printf("Open pdf\n");
     open_pdf();
 }
 
-void generate_full_document(){
-    printf("Creating LATEX/soa-p3.tex\n");
-    FILE *fp;fp=fopen(TEX_FILE, "wt");
+void generate_full_document(results* res){
+    printf("Creating out/soa-p3.tex\n");
+    FILE *fp;
+    fp=fopen(TEX_FILE, "wt");
 
     printf("Generating body of tex\n");
     document_class(fp);
@@ -37,7 +36,7 @@ void generate_full_document(){
     packages_document(fp);
     theme_document(fp);
     fprintf(fp, "\n");
-    init_document(fp);
+    init_document(fp, res);
     fprintf(fp, "\n");
 
     printf("Close soa-p3.tex\n");
@@ -60,18 +59,22 @@ void theme_document(FILE *fp){
     fprintf(fp, "\\usetheme{Madrid}\n");
 }
 
-void init_document(FILE *fp){
+void init_document(FILE *fp, results* res){
+    printf("Test");
     generate_title(fp);
+    printf("Test");
     fprintf(fp,"\n");
     fprintf(fp,"\\begin{document}\n");
     fprintf(fp,"\\frame{\\titlepage}\n");
 
+
     slice_algoritmos(fp);
     slide_schedulability(fp);
-    if(0){ // ALL IN THE SAME SLICE
+    if(res->all_same_sile){ // ALL IN THE SAME SLICE
 
     }else{ // SEPARATE SLICE
-        generate_slice_only_RM(fp);
+        printf("Test");
+        generate_slice_only_RM(fp, res->rm_result);
     }
     
     fprintf(fp,"\\end{document}");
@@ -153,20 +156,24 @@ void generate_timeline_task(FILE *fp,int id,int period, int total_steps){
     fprintf(fp,"\\\\ \n");
 }
 
-void generate_slice_only_RM(FILE *fp){
+void generate_slice_only_RM(FILE *fp, scheduler_result res){
     begin_slice(fp,"RM");
+    printf("rm");
 
-    int total_steps = 13;
-    int total_task = 6;
-    
+    int total_steps = res.simulation_length;
+    int total_task = res.task_size;
+//
     begin_table(fp,total_steps);
     generate_step_number(fp,total_steps);
-
+//
     for(int t = 0; t < total_task; t++){
-        generate_timeline_task(fp,t+1,t+1,total_steps);
+        printf("Generation timeline");
+        printf("%d %d\n",res.tasks->tasks[t].id,res.tasks->tasks[t].p);
+        generate_timeline_task(fp,res.tasks->tasks[t].id,res.tasks->tasks[t].p,total_steps);
     }
+//
     fprintf(fp,"\\cline{1-%d}",total_steps+1);
-
+//
     end_table(fp);
     end_slice(fp);
 }
