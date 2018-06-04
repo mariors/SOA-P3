@@ -71,7 +71,7 @@ void init_document(FILE *fp, results* res){
     slice_algoritmos(fp);
     slide_schedulability(fp,res);
     if(res->all_same_sile){ // ALL IN THE SAME SLICE
- 
+        generate_slide_multiples_algorithm(fp,"Multi", res->rm_result,res->edf_result,res->llf_result);
     }else{ // SEPARATE SLICE
         generate_slide_single_algorithm(fp,"RM", res->rm_result);
         generate_slide_single_algorithm(fp,"EDF", res->edf_result);
@@ -162,12 +162,13 @@ void generate_timeline_task(FILE *fp,scheduler_result result,int actual_task, in
     for(int i = -1; i<total_steps-1;i++){
         fprintf(fp,"& ");
 
+        const char* color = get_color_task(id);
+        if(result.simulation[i+1].running_task_id == id && actual_step >= result.simulation[i+1].time )
+            fprintf(fp,"\\cellcolor{%s}",color);
+
         if(i==-1)
             fprintf(fp,"%s", deadline);
         else{
-            const char* color = get_color_task(id);
-            if(result.simulation[i].running_task_id == id && actual_step >= result.simulation[i].time )
-                fprintf(fp,"\\cellcolor{%s}",color);
 
             fprintf(fp,"%s", result.simulation[i].time%period==0? deadline: "");
         }
@@ -193,20 +194,33 @@ void generate_table_single_algorithm(FILE *fp, scheduler_result result, int actu
 
 void generate_slide_single_algorithm(FILE *fp, const char* title, scheduler_result result){
     printf("Generating for %s\n",title);
-    printf("TOTAL length: %d\n",result.simulation_length);
-    printf("FIX length: %d\n",result.fix_length);
     for(int step = 0; step < result.fix_length+2; step++){
         begin_slice(fp,title);
-
-        // TODO: delete!
-            fprintf(fp,"sadasd");
-            fprintf(fp,"%d\n",result.simulation[step].status);
-        //
 
         generate_table_single_algorithm(fp,result,step);
         end_slice(fp);
     }
 }
+
+int max(int a, int b){
+    if(a>b)
+        return a;
+    return b;
+}
+
+void generate_slide_multiples_algorithm(FILE *fp, const char* title, scheduler_result rm, scheduler_result edf, scheduler_result llf){
+    printf("Generating for %s\n",title);
+    int max_fl = max(rm.fix_length, max(edf.fix_length,llf.fix_length));
+    for(int step = 0; step < max_fl+2; step++){
+        begin_slice(fp,title);
+
+        generate_table_single_algorithm(fp,rm,step);
+        generate_table_single_algorithm(fp,edf,step);
+        generate_table_single_algorithm(fp,llf,step);
+        end_slice(fp);
+    }
+}
+
 
 
 void slide_schedulability(FILE *fp, results* res) {

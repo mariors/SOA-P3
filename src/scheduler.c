@@ -8,12 +8,13 @@
 #define CRASHED 3
 
 void calculate_fix_length(scheduler_result *r){
-    r->fix_length = r->simulation_length -1;
+    r->fix_length = r->simulation_length;
     for(int i = 0; i < r->simulation_length; i++){
         if(r->simulation[i].status == FINISHED || r->simulation[i].status == CRASHED){
             r->fix_length = i;
             break;
         }
+        printf("%d\n",r->simulation[i].status);
     }
 
 }
@@ -75,7 +76,7 @@ scheduler_result scheduler_simulator(task_set *set, Algorithm algorithm) {
 
     int needs_schedule = 0;
 
-    for (int t = 1; t < steps; t++) {
+    for (int t = 1; t <= steps; t++) {
 
 //        printf("SCH Tiempo t = %d\n", t);
 
