@@ -17,7 +17,7 @@ void init_documentation(){
     printf("Generating pdf\n");
     generate_pdf();
     printf("Open pdf\n");
-    // open_pdf();
+    open_pdf();
 }
 
 void generate_full_document(){
@@ -89,13 +89,14 @@ void slice_algoritmos(FILE *fp){
 
 void generate_pdf(){
     pid_t pid;
-    char *const argv[] = {LATEX_COMMAND, LATEX_OUTPUT_DIRECTORY,TEX_FILE, NULL};
+    char *const argv[] = {LATEX_COMMAND,LATEX_OUTPUT_DIRECTORY,TEX_FILE, NULL};
+//    char *const argv[] = {LATEX_OUTPUT_DIRECTORY,TEX_FILE, NULL};
     if ((pid = fork()) ==-1)
         perror("fork error");
     else if (pid == 0) {
         printf("Excecuting pdflatex to generate pdf\n");
         
-        if (-1 == execve(argv[0], (char **)argv , NULL)) {
+        if (-1 == execve(LATEX_COMMAND, (char **)argv , NULL)) {
             perror("Error Ejecutando pdflatex");
         }
     }
@@ -103,14 +104,19 @@ void generate_pdf(){
 
 // this is not working
 void open_pdf(){
+	char *symlinkpath = PDF_FILE;
+	char actualpath [4096+1];
+	char *ptr;
+
+	ptr = realpath(symlinkpath, actualpath);
     pid_t pid;
-    char *const argv[] = {EVINCE_COMMAND,PDF_FILE, NULL};
+    char *const argv[] = {EVINCE_COMMAND,actualpath, NULL};
+	char *env[]={"DISPLAY=:0",NULL};
     if ((pid = fork()) ==-1)
         perror("fork error");
     else if (pid == 0) {
-        printf("Excecuting evince to open pdf\n");
-        
-        if (-1 == execve(argv[0], (char **)argv , NULL)) {
+		sleep(2);
+        if (-1 == execve(EVINCE_COMMAND, (char **)argv , env)) {
             perror("Error Ejecutando evince");
         }
     }
