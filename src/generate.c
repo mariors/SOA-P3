@@ -155,14 +155,21 @@ void generate_timeline_task(FILE *fp,scheduler_result result,int actual_task, in
     fprintf(fp,"t%d",id);
 
     const char* deadline = "*";
-    for(int i = 0; i<total_steps;i++){
+    
+    for(int i = -1; i<total_steps-1;i++){
         fprintf(fp,"& ");
-
-        const char* color = get_color_task(id);
-        if(result.simulation[i].running_task_id == id)
-            fprintf("\\cellcolor{%s}",color); 
-
-        fprintf(fp,"%s", result.simulation[i].time%period==0? deadline: "");
+        
+        
+        if(i==-1)
+            fprintf(fp,"%s", deadline);
+        else{
+            const char* color = get_color_task(id);
+            if(result.simulation[i].running_task_id == id)
+                fprintf("\\cellcolor{%s}",color); 
+            
+            fprintf(fp,"%s", result.simulation[i].time%period==0? deadline: "");
+        }
+            
     }
     fprintf(fp,"\\\\ \n");
 }
