@@ -22,7 +22,6 @@ typedef struct add_btn_click_data {
 
     GtkWidget *period;
     GtkWidget *excec_time;
-    GtkWidget *priority;
 
     GtkWidget *feedback_text;
 } add_click_data;
@@ -170,11 +169,6 @@ static void init(int argc, char **argv) {
     GtkWidget *exec_time_entry = gtk_entry_new();
     gtk_grid_attach_next_to(GTK_GRID (grid), exec_time_entry, child3, GTK_POS_RIGHT, 1, 1);
 
-    GtkWidget *child5 = gtk_label_new("Task priority:");
-    gtk_grid_attach(GTK_GRID (grid), child5, 0, 2, 1, 1);
-    GtkWidget *priority_entry = gtk_entry_new();
-    gtk_grid_attach_next_to(GTK_GRID (grid), priority_entry, child5, GTK_POS_RIGHT, 1, 1);
-
     GtkWidget *add_btn = gtk_button_new_with_label("Add");
     gtk_grid_attach(GTK_GRID (grid), add_btn, 1, 3, 1, 1);
 
@@ -209,8 +203,6 @@ static void init(int argc, char **argv) {
 
     add_data->excec_time = exec_time_entry;
     add_data->period = period_entry;
-    add_data->priority = priority_entry;
-
 
     g_signal_connect(G_OBJECT(add_btn), "clicked", G_CALLBACK(add_btn_clicked), add_data);
 
