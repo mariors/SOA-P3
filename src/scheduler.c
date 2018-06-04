@@ -4,17 +4,31 @@
 
 #include "../headers/scheduler.h"
 
+#define FINISHED 2
+#define CRASHED 3
+
+void calculate_fix_length(scheduler_result *r){
+    for(int i = 0; i < r->simulation_length; i++){
+        if(r->simulation[i].status == FINISHED || r->simulation[i].status == CRASHED){
+            r->fix_length = i;
+            break;
+        }
+    }
+}
 
 results schedule(task_set *set) {
     scheduler_result res_rm, res_edf, res_llf;
     if (set->is_rm == 1) {
         res_rm = scheduler_simulator(set, RM);
+        calculate_fix_length(&res_rm);
     }
     if (set->is_edf == 1) {
         res_edf = scheduler_simulator(set, EDF);
+        calculate_fix_length(&res_edf);
     }
     if (set->is_llf == 1) {
         res_llf = scheduler_simulator(set, LLF);
+        calculate_fix_length(&res_llf);
     }
     results res = {.is_rm = set->is_rm, .is_edf = set->is_edf, .is_llf = set->is_llf, .rm_result = res_rm, .edf_result = res_edf, .llf_result = res_llf};
     return res;

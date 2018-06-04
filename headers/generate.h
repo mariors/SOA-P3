@@ -22,6 +22,8 @@ void slice_algoritmos(FILE *fp);
 
 void generate_slice_only_RM(FILE *fp,scheduler_result);
 
+void generate_slide_single_algorithm(FILE *fp,const char* title, scheduler_result result);
+
 void generate_pdf();
 
 void open_pdf();
