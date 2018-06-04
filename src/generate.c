@@ -187,7 +187,7 @@ void slide_schedulability(FILE *fp, results* res) {
 	fprintf(fp, "Under Rate Monotonic, $U = 0.5 < 0.6$. This task set is executable|not sure if executable");//TODO: ADD SCHEDULABLE? UNDER EACH.
 
 	fprintf(fp, "\\begin{itemize}\n");
-	fprintf(fp, "\\item RM: " + ((res->rm_result.is_schedulable)? "Is" : "Is not") + " schedulable\n");
+	fprintf(fp, "\\item RM: %s schedulable\n",((res->rm_result.is_schedulable)? "Is" : "Is not"));
 	fprintf(fp, "\\end{itemize}\n");
 	
 	fprintf(fp, "\\end{block}\n");
@@ -197,8 +197,8 @@ void slide_schedulability(FILE *fp, results* res) {
 	fprintf(fp, "Under EDF or LLF $U=0.8 < 1.0$ This task set is executable|not executable");//TODO: ADD SCHEDULABLE? UNDER EACH.
 
 	fprintf(fp, "\\begin{itemize}\n");
-	fprintf(fp, "\\item EDF: " + ((res->edf_result.is_schedulable)? "Is" : "Is not") + " schedulable\n");
-	fprintf(fp, "\\item LLF: " + ((res->llf_result.is_schedulable)? "Is" : "Is not") + " schedulable\n");
+	fprintf(fp, "\\item EDF: %s schedulable\n",(res->edf_result.is_schedulable)? "Is" : "Is not");
+	fprintf(fp, "\\item LLF: %s schedulable\n",(res->llf_result.is_schedulable)? "Is" : "Is not");
 	fprintf(fp, "\\end{itemize}\n");
 	
 	fprintf(fp, "\\end{block}\n");
@@ -221,7 +221,6 @@ void generate_pdf(){
     }
 }
 
-// this is not working
 void open_pdf(){
 	char *symlinkpath = PDF_FILE;
 	char actualpath [4096+1];
