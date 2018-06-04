@@ -20,7 +20,7 @@ typedef struct scheduler_temp_result {
 
 } scheduler_temp_result;
 
-scheduler_result schedule(task_set* set, Algorithm algorithm);
+scheduler_result schedule_old(task_set* set, Algorithm algorithm);
 scheduler_temp_result scheduler_simulator(task_set* set, Algorithm algorithm);
 int scheduled_idx(int periods[], int waiting[], int left_c[], int left_p[], int size, Algorithm algorithm);
 int scheduled_idx_rm(int periods[], int waiting[], int size);

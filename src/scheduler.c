@@ -4,14 +4,14 @@
 
 #include "../headers/scheduler.h"
 
-
+/*
 results schedule(task_set* set){
     scheduler_temp_result res = scheduler_simulator(set, algorithm);
     int is_sched = is_schedulable(set, algorithm);
     scheduler_result result = {.simulation = res.simulation, .simulation_length = res.simulation_length, .tasks = set, .is_schedulable = is_sched};
     return result;
 }
-
+*/
 scheduler_result schedule_old(task_set* set, Algorithm algorithm){
     scheduler_temp_result res = scheduler_simulator(set, algorithm);
     int is_sched = is_schedulable(set, algorithm);

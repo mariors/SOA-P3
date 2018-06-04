@@ -21,8 +21,8 @@ int main() {
 
     task_set set = {.size = 3, .tasks = p};
 
-//    scheduler_result res = schedule(&set, RM);
-    scheduler_temp_result res = scheduler_simulator(&set, RM);
+    scheduler_result res = schedule_old(&set, RM);
+//    scheduler_temp_result res = scheduler_simulator(&set, RM);
 
     scheduler_result_item* steps = res.simulation;
     int length = res.simulation_length;
