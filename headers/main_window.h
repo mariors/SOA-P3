@@ -79,12 +79,30 @@ static void add_btn_clicked(GtkWidget *widget, gpointer data) {
         return;
     }
 
+    if (strtoll(excec_time_str, NULL, 10) > strtoll(period_str, NULL, 10)) {
+        gtk_label_set_text(((add_click_data *) data)->feedback_text, "Input number must actually make sense!");
+        return;
+    }
+
+    int size = 0;
+
+    gboolean out = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(((add_click_data *) data)->store), &iter);
+
+    while (out) {
+        size++;
+        out = gtk_tree_model_iter_next(GTK_TREE_MODEL(((add_click_data *) data)->store), &iter);
+    }
+
+    if (size >= 6) {
+        gtk_label_set_text(((add_click_data *) data)->feedback_text, "Maximum allowed task number is 6!");
+        return;
+    }
+
     gtk_list_store_append(GTK_LIST_STORE(((add_click_data *) data)->store), &iter);
     gtk_list_store_set(GTK_LIST_STORE(((add_click_data *) data)->store), &iter,
                        LIST_TASK_PERIOD, period_str,
                        LIST_TASK_EXECUTION_TIME, excec_time_str,
                        -1);
-
 
 }
 
@@ -123,7 +141,7 @@ static void run_btn_clicked(GtkWidget *widget, gpointer data) {
 
     int it = 0;
     while (out) {
-        gchar *period_str, *priority_str, *exec_time_str;
+        gchar *period_str, *exec_time_str;
         gtk_tree_model_get(GTK_TREE_MODEL(list), &iter,
                            LIST_TASK_PERIOD, &period_str,
                            LIST_TASK_EXECUTION_TIME, &exec_time_str,
@@ -267,8 +285,7 @@ create_list_view(GtkCellRenderer *renderer, GtkTreeViewColumn *column, GtkListSt
     gtk_tree_view_append_column(GTK_TREE_VIEW((*list)), column);
 
     renderer = gtk_cell_renderer_text_new();
-    column = gtk_tree_view_column_new_with_attributes("EXECUTION_TIME", renderer, "text", LIST_TASK_EXECUTION_TIME,
-                                                      NULL);
+    column = gtk_tree_view_column_new_with_attributes("EXECUTION_TIME", renderer, "text", LIST_TASK_EXECUTION_TIME, NULL);
     gtk_tree_view_append_column(GTK_TREE_VIEW((*list)), column);
 
     gtk_tree_view_set_model(GTK_TREE_VIEW((*list)), GTK_TREE_MODEL((*store)));
