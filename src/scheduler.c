@@ -4,25 +4,33 @@
 
 #include "../headers/scheduler.h"
 
-/*
+
 results schedule(task_set* set){
-    scheduler_temp_result res = scheduler_simulator(set, algorithm);
-    int is_sched = is_schedulable(set, algorithm);
-    scheduler_result result = {.simulation = res.simulation, .simulation_length = res.simulation_length, .tasks = set, .is_schedulable = is_sched};
-    return result;
+    scheduler_result res_rm, res_edf, res_llf;
+    if(set->is_rm == 1){
+        res_rm = scheduler_simulator(set, RM);
+    }if(set->is_edf == 1){
+        res_edf = scheduler_simulator(set, EDF);
+    }if(set->is_llf == 1){
+        res_llf = scheduler_simulator(set, LLF);
+    }
+    results res = {.is_rm = set->is_rm, .is_edf = set->is_edf, .is_llf = set->is_llf, .rm_result = res_rm, .edf_result = res_edf, .llf_result = res_llf};
+    return res;
 }
-*/
+
 scheduler_result schedule_old(task_set* set, Algorithm algorithm){
-    scheduler_temp_result res = scheduler_simulator(set, algorithm);
+    scheduler_result res = scheduler_simulator(set, algorithm);
     int is_sched = is_schedulable(set, algorithm);
     scheduler_result result = {.simulation = res.simulation, .simulation_length = res.simulation_length, .tasks = set, .is_schedulable = is_sched};
     return result;
 }
 
-scheduler_temp_result scheduler_simulator(task_set* set, Algorithm algorithm){
+scheduler_result scheduler_simulator(task_set* set, Algorithm algorithm){
 
     int steps = lcm(set);
     int size = set->size;
+
+    int is_sched = is_schedulable(set, algorithm);
 
     scheduler_result_item moments[steps - 1];
     int interesting_moments[steps - 1];
@@ -51,7 +59,7 @@ scheduler_temp_result scheduler_simulator(task_set* set, Algorithm algorithm){
 
     for(int t = 1; t < steps; t++){
 
-        printf("SCH Tiempo t = %d\n", t);
+//        printf("SCH Tiempo t = %d\n", t);
 
         //time management
 
@@ -91,7 +99,8 @@ scheduler_temp_result scheduler_simulator(task_set* set, Algorithm algorithm){
             scheduler_result_item moment = make_moment(arriving, ids, size, t, current_idx, crashed_idx, CRASHED);
             moments[t - 1] = moment;
             interesting_moments[t - 1] = 1;
-            scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
+//            scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
+            scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched};
             return result;
         }
 
@@ -104,7 +113,8 @@ scheduler_temp_result scheduler_simulator(task_set* set, Algorithm algorithm){
                 scheduler_result_item moment = make_moment(arriving, ids, size, t, current_idx, current_idx, CRASHED);
                 moments[t - 1] = moment;
                 interesting_moments[t - 1] = 1;
-                scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
+//                scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
+                scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched};
                 return result;
             }else{
                 scheduler_result_item moment = make_moment(arriving, ids, size, t, current_idx, -1, RUNNING);
@@ -143,7 +153,8 @@ scheduler_temp_result scheduler_simulator(task_set* set, Algorithm algorithm){
                 scheduler_result_item moment = make_moment(arriving, ids, size, t, current_idx, -1, FINISHED);
                 moments[t - 1] = moment;
                 interesting_moments[t - 1] = 1;
-                scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
+//                scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
+                scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched};
                 return result;
             }
 
@@ -163,7 +174,8 @@ scheduler_temp_result scheduler_simulator(task_set* set, Algorithm algorithm){
                     scheduler_result_item moment = make_moment(arriving, ids, size, t, current_idx, -1, FINISHED);
                     moments[t - 1] = moment;
                     interesting_moments[t - 1] = 1;
-                    scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
+//                    scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
+                    scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched};
                     return result;
                 }
             }
@@ -177,7 +189,8 @@ scheduler_temp_result scheduler_simulator(task_set* set, Algorithm algorithm){
             //TODO MAKE SIMULATION ENTRY
         }
     }
-    scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
+//    scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
+    scheduler_result result = {.simulation = moments, .simulation_length = steps, .tasks = set, .is_schedulable = is_sched};
     return result;
 }
 
