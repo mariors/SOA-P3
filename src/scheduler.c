@@ -6,6 +6,7 @@
 #include "../headers/scheduler_result.h"
 #include "../headers/tests.h"
 
+/*
 scheduler_result_item* scheduler_simulator(task_set* set, Algorithm algorithm){
 
     int steps = lcm(set);
@@ -161,5 +162,5 @@ int scheduled_idx_llf(int left_c[], int left_p[], int waiting[], int size){
     }
     return idx;
 }
-
+*/
 

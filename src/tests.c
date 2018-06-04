@@ -17,7 +17,7 @@ int test_rm(task_set* set){
 
 int test_edf(task_set* set){
     float sum = calculate_sum(set);
-    if(sum <= 1f){
+    if(sum <= 1.0){
         return 1;
     }else{
         return 0;
@@ -26,7 +26,7 @@ int test_edf(task_set* set){
 
 int test_bini(task_set* set){
     float prod = calculate_prod(set);
-    if(prod <= 2f){
+    if(prod <= 2.0){
         return 1;
     }else{
         return 0;
@@ -38,7 +38,7 @@ float calculate_U(int set_size){
 }
 
 float calculate_sum(task_set* set){
-    float sum = 0f;
+    float sum = 0.0;
     task* tasks = set->tasks;
     for(int i = 0; i < set->size; i++){
         task t = *(tasks + i);
@@ -48,7 +48,7 @@ float calculate_sum(task_set* set){
 }
 
 float calculate_prod(task_set* set){
-    float prod = 1f;
+    float prod = 1.0;
     task* tasks = set->tasks;
     for(int i = 0; i < set->size; i++){
         task t = *(tasks + i);
