@@ -66,6 +66,7 @@ void init_document(FILE *fp){
     fprintf(fp,"\\frame{\\titlepage}\n");
 
     slice_algoritmos(fp);
+    slide_schedulability(fp);
     if(0){ // ALL IN THE SAME SLICE
 
     }else{ // SEPARATE SLICE
