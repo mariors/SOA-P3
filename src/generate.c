@@ -69,7 +69,7 @@ void init_document(FILE *fp, results* res){
 
 
     slice_algoritmos(fp);
-    slide_schedulability(fp);
+    slide_schedulability(fp,res);
     if(res->all_same_sile){ // ALL IN THE SAME SLICE
 
     }else{ // SEPARATE SLICE
@@ -184,23 +184,28 @@ void slide_schedulability(FILE *fp, results* res) {
 	fprintf(fp, "\\begin{block}{RM: Rate Monotonic}\n");
 	fprintf(fp, "$U = \\sum^n_{i=1}{\\frac{C_i}{T_i}\\leq n(2^{1/n}-1))}$\n\n");
 
-	fprintf(fp, "Under Rate Monotonic, $U = 0.5 < 0.6$. This task set is executable|not sure if executable");//TODO: ADD SCHEDULABLE? UNDER EACH.
+//	fprintf(fp, "Under Rate Monotonic, $U = 0.5 < 0.6$. This task set is executable|not sure if executable");//TODO: ADD SCHEDULABLE? UNDER EACH.
+	if(res->is_rm){
+		fprintf(fp, "\\begin{itemize}\n");
 
-	fprintf(fp, "\\begin{itemize}\n");
-	fprintf(fp, "\\item RM: %s schedulable\n",((res->rm_result.is_schedulable)? "Is" : "Is not"));
-	fprintf(fp, "\\end{itemize}\n");
-	
+		fprintf(fp, "\\item RM: %s schedulable\n",((res->rm_result.is_schedulable)? "Is" : "Is not"));
+		fprintf(fp, "\\end{itemize}\n");
+	}
 	fprintf(fp, "\\end{block}\n");
 	fprintf(fp, "\\begin{block}{EDF and LLF}\n");
 	fprintf(fp, "$U = \\sum^n_{i=1}{\\frac{C_i}{T_i}\\leq 1}$\n\n");
 
-	fprintf(fp, "Under EDF or LLF $U=0.8 < 1.0$ This task set is executable|not executable");//TODO: ADD SCHEDULABLE? UNDER EACH.
-
-	fprintf(fp, "\\begin{itemize}\n");
-	fprintf(fp, "\\item EDF: %s schedulable\n",(res->edf_result.is_schedulable)? "Is" : "Is not");
-	fprintf(fp, "\\item LLF: %s schedulable\n",(res->llf_result.is_schedulable)? "Is" : "Is not");
-	fprintf(fp, "\\end{itemize}\n");
-	
+//	fprintf(fp, "Under EDF or LLF $U=0.8 < 1.0$ This task set is executable|not executable");//TODO: ADD SCHEDULABLE? UNDER EACH.
+	if(res->is_edf || res->is_llf){
+		fprintf(fp, "\\begin{itemize}\n");
+		printf("res->edf_result.is_schedulable %d\n", res->edf_result.is_schedulable);
+		printf("res->llf_result.is_schedulable %d\n", res->llf_result.is_schedulable);
+		if(res->is_edf)
+			fprintf(fp, "\\item EDF: %s schedulable\n",(res->edf_result.is_schedulable)? "Is" : "Is not");
+		if(res->is_llf)
+			fprintf(fp, "\\item LLF: %s schedulable\n",(res->llf_result.is_schedulable)? "Is" : "Is not");
+		fprintf(fp, "\\end{itemize}\n");
+	}
 	fprintf(fp, "\\end{block}\n");
 	fprintf(fp, "\\end{frame}\n");
 }
