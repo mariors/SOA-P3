@@ -55,6 +55,7 @@ void init_document(FILE *fp){
     fprintf(fp,"\\frame{\\titlepage}\n");
 
     slice_algoritmos(fp);
+	slide_schedulability(fp);
     if(1){ // ALL IN THE SAME SLICE
 
     }else{ // SEPARATE SLICE
@@ -86,6 +87,24 @@ void slice_algoritmos(FILE *fp){
     fprintf(fp, "");
     fprintf(fp, "\\end{block}\n");
     fprintf(fp, "\\end{frame}\n");
+}
+
+void slide_schedulability(FILE *fp) {
+	fprintf(fp, "\\begin{frame}\n");
+	fprintf(fp, "\\frametitle{Test de schedulability}\n");
+	fprintf(fp, "\\begin{block}{RM: Rate Monotonic}\n");
+	fprintf(fp, "$U = \\sum^n_{i=1}{\\frac{C_i}{T_i}\\leq n(2^{1/n}-1))}$");
+	fprintf(fp, "\\end{block}\n");
+	fprintf(fp, "\\begin{block}{EDF and LLF}\n");
+	fprintf(fp, "$U = \\sum^n_{i=1}{\\frac{C_i}{T_i}\\leq 1}$");
+	fprintf(fp, "\\end{block}\n");
+//	fprintf(fp, "\\begin{block}{LLF: Least Laxity First}\n");
+//	fprintf(fp, "$U = \\sum^n_{i=1}{\\frac{C_i}{T_i}\\leq 1}$");
+
+
+//	fprintf(fp, "\\end{block}\n");
+	//TODO: ADD SCHEDULABLE? UNDER EACH.
+	fprintf(fp, "\\end{frame}\n");
 }
 
 
