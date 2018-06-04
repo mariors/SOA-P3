@@ -1,9 +1,14 @@
 #include <stdio.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stdio.h>
 #include "../headers/scheduler.h"
 
 int main() {
-//    printf("Hello, World!\n");
-//    return 0;
+    printf("Hello, World!\n");
+    init_documentation();
+
+    return 0;
 /*
     task tasks[3];
 
