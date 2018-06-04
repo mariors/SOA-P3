@@ -5,7 +5,14 @@
 #include "../headers/scheduler.h"
 
 
-scheduler_result schedule(task_set* set, Algorithm algorithm){
+results schedule(task_set* set){
+    scheduler_temp_result res = scheduler_simulator(set, algorithm);
+    int is_sched = is_schedulable(set, algorithm);
+    scheduler_result result = {.simulation = res.simulation, .simulation_length = res.simulation_length, .tasks = set, .is_schedulable = is_sched};
+    return result;
+}
+
+scheduler_result schedule_old(task_set* set, Algorithm algorithm){
     scheduler_temp_result res = scheduler_simulator(set, algorithm);
     int is_sched = is_schedulable(set, algorithm);
     scheduler_result result = {.simulation = res.simulation, .simulation_length = res.simulation_length, .tasks = set, .is_schedulable = is_sched};
@@ -122,6 +129,24 @@ scheduler_temp_result scheduler_simulator(task_set* set, Algorithm algorithm){
                 left_p[current_idx] = periods[current_idx];
                 arriving[current_idx] = 1;
             }
+
+            int all_done = 1;
+
+            for(int i = 0; i < size; i++){
+                if(waiting[i] == 1){
+                    all_done = 0;
+                    break;
+                }
+            }
+
+            if(all_done == 1){
+                scheduler_result_item moment = make_moment(arriving, ids, size, t, current_idx, -1, FINISHED);
+                moments[t - 1] = moment;
+                interesting_moments[t - 1] = 1;
+                scheduler_temp_result result = {.interest_times = interesting_moments, .simulation = moments, .simulation_length = steps};
+                return result;
+            }
+
             if((t + 1) == steps){
                 int all_finished = 1;
                 for(int i = 0; i < size; i++){
@@ -212,6 +237,10 @@ int scheduled_idx_llf(int left_c[], int left_p[], int waiting[], int size){
 }
 
 scheduler_result_item make_moment(int arrivals[], int ids[], int size, int time, int current_idx, int crashed_idx, Status status){
+    int crash_id = -1;
+    if(crashed_idx >= 0){
+        crash_id = ids[crashed_idx];
+    }
     int positives = 0;
     for(int i = 0; i < size; i++){
         if(arrivals[i] == 1){
@@ -220,7 +249,7 @@ scheduler_result_item make_moment(int arrivals[], int ids[], int size, int time,
     }
 
     if(positives == 0){
-        scheduler_result_item moment = {.time = time, .running_task_id = ids[current_idx], .crashed_task_id = ids[crashed_idx], .status = status, .arriving_task_size = 0};
+        scheduler_result_item moment = {.time = time, .running_task_id = ids[current_idx], .crashed_task_id = crash_id, .status = status, .arriving_task_size = 0};
         return moment;
     }
 
@@ -236,7 +265,7 @@ scheduler_result_item make_moment(int arrivals[], int ids[], int size, int time,
 
     int* arrivings = copy;
 
-    scheduler_result_item moment = {.time = time, .running_task_id = ids[current_idx], .crashed_task_id = ids[crashed_idx], .status = status, .arriving_task_size = positives, .arriving_tasks = arrivings};
+    scheduler_result_item moment = {.time = time, .running_task_id = ids[current_idx], .crashed_task_id = crash_id, .status = status, .arriving_task_size = positives, .arriving_tasks = arrivings};
     return moment;
 
 }

@@ -30,6 +30,19 @@ typedef struct scheduler_result {
 
 } scheduler_result;
 
+typedef struct results {
+
+    int is_rm;
+    int is_edf;
+    int is_llf;
+
+    scheduler_result rm_result;
+    scheduler_result edf_result;
+    scheduler_result llf_result;
+
+
+} results;
+
 scheduler_result_item* create_result_item (int,int*,int);
 void add_scheudler_result_item(scheduler_result*,scheduler_result_item*);
 

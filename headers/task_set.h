@@ -16,6 +16,11 @@ typedef struct task{
 } task;
 
 typedef struct task_set{
+
+    int is_rm;
+    int is_edf;
+    int is_llf;
+
     int size;
     task* tasks;
 } task_set;

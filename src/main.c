@@ -5,11 +5,12 @@
 #include "../headers/scheduler.h"
 
 int main() {
+/*
     printf("Hello, World!\n");
     init_documentation();
 
     return 0;
-/*
+*/
     task tasks[3];
 
     tasks[0] = (task){.id = 1, .e = 1, .p = 6};
@@ -31,6 +32,7 @@ int main() {
         scheduler_result_item step = *(steps + i);
         printf("\nTiempo t = %d\n", step.time);
         printf("Current = %d\n", step.running_task_id);
+        printf("Status = %d\n", step.status);
     }
-*/
+
 }
