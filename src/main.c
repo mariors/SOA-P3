@@ -4,6 +4,6 @@
 
 int main(int argc, char **argv) {
     printf("Hello, World!\n");
-    lunch_window(argc, argv);
+    init(argc, argv);
     return 0;
 }
