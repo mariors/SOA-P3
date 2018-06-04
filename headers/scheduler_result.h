@@ -7,9 +7,13 @@
 
 #include "task_set.h"
 
-typedef struct scheduler_result_item {
-    int running_task_id;
+typedef enum {RUNNING = 0, ARRIVAL = 1, FINISHED = 2, CRASHED = 3} Status;
 
+typedef struct scheduler_result_item {
+    int time;
+    int running_task_id;
+    Status status;
+    int crashed_task_id;
     int* arriving_tasks;
     int arriving_task_size;
 
