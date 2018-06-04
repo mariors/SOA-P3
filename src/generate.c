@@ -178,7 +178,7 @@ void generate_slice_only_RM(FILE *fp, scheduler_result res){
     end_slice(fp);
 }
 
-void slide_schedulability(FILE *fp) {
+void slide_schedulability(FILE *fp, results* res) {
 	fprintf(fp, "\\begin{frame}\n");
 	fprintf(fp, "\\frametitle{Test de schedulability}\n");
 	fprintf(fp, "\\begin{block}{RM: Rate Monotonic}\n");
@@ -187,7 +187,7 @@ void slide_schedulability(FILE *fp) {
 	fprintf(fp, "Under Rate Monotonic, $U = 0.5 < 0.6$. This task set is executable|not sure if executable");//TODO: ADD SCHEDULABLE? UNDER EACH.
 
 	fprintf(fp, "\\begin{itemize}\n");
-	fprintf(fp, "\\item RM: " + ((1)? "Is" : "Is not") + " schedulable\n");
+	fprintf(fp, "\\item RM: " + ((res->rm_result.is_schedulable)? "Is" : "Is not") + " schedulable\n");
 	fprintf(fp, "\\end{itemize}\n");
 	
 	fprintf(fp, "\\end{block}\n");
@@ -197,8 +197,8 @@ void slide_schedulability(FILE *fp) {
 	fprintf(fp, "Under EDF or LLF $U=0.8 < 1.0$ This task set is executable|not executable");//TODO: ADD SCHEDULABLE? UNDER EACH.
 
 	fprintf(fp, "\\begin{itemize}\n");
-	fprintf(fp, "\\item EDF: " + ((1)? "Is" : "Is not") + " schedulable\n");
-	fprintf(fp, "\\item LLF: " + ((1)? "Is" : "Is not") + " schedulable\n");
+	fprintf(fp, "\\item EDF: " + ((res->edf_result.is_schedulable)? "Is" : "Is not") + " schedulable\n");
+	fprintf(fp, "\\item LLF: " + ((res->llf_result.is_schedulable)? "Is" : "Is not") + " schedulable\n");
 	fprintf(fp, "\\end{itemize}\n");
 	
 	fprintf(fp, "\\end{block}\n");
