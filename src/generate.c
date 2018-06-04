@@ -80,12 +80,14 @@ void slice_algoritmos(FILE *fp){
     fprintf(fp, "\\begin{block}{EDF: Earliest Deadline First}\n");
     fprintf(fp, "Este es un algoritmo expropiativo, consiste cuando una tarea llega a cola de Ready se revisan las prioridades y si es necesarip expropia a la tarea que este usando la CPU en ese momento.");
     fprintf(fp, "\\end{block}\n");
-    fprintf(fp, "\\begin{block}{LLF: Least Laxity First}\n");
+	fprintf(fp, "\\begin{block}{LLF: Least Laxity First}\n");
+	fprintf(fp, "Algoritmo que asigna prioridades según el Laxity de las tareas en la cola. Laxity está definido como $X_i = (d_i-a_i-C_i)$\n");
+	fprintf(fp, "donde $C_i$ es tiempo de computación, $d_i$ es el deadline y $a_i$ es el tiempo de arribo\n");
     fprintf(fp, "");
     fprintf(fp, "\\end{block}\n");
     fprintf(fp, "\\end{frame}\n");
-   
 }
+
 
 void generate_pdf(){
     pid_t pid;
