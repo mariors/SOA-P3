@@ -19,6 +19,8 @@ void generate_title(FILE *fp);
 
 void slice_algoritmos(FILE *fp);
 
+void generate_slice_only_RM(FILE *fp);
+
 void generate_pdf();
 
 void open_pdf();
