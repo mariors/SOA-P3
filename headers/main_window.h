@@ -7,6 +7,7 @@
 
 #include <gtk/gtk.h>
 #include <stdbool.h>
+#include <memory.h>
 #include "task_set.h"
 #include "scheduler.h"
 #include "generate.h"
@@ -57,22 +58,26 @@ static void destroy(GtkWidget *widget, gpointer data) {
 
 
 static void set_window(GtkWidget *window) {
-    gtk_window_set_title(GTK_WINDOW(window), "My Window"); //Set window title
-    gtk_window_set_default_size(GTK_WINDOW (window), 400, 300); //Set default size for the window
+    gtk_window_set_title(GTK_WINDOW(window), "Project 3"); //Set window title
+    gtk_window_set_default_size(GTK_WINDOW (window), 400, 200); //Set default size for the window
     g_signal_connect (window, "destroy", G_CALLBACK(destroy), NULL); //End application when close button clicked
 
 }
 
 
 static void add_btn_clicked(GtkWidget *widget, gpointer data) {
+
+    gtk_label_set_text(((add_click_data *) data)->feedback_text, "");
     GtkTreeIter iter;
 
     const gchar *period_str = gtk_entry_get_text((GtkEntry *) ((add_click_data *) data)->period);
     const gchar *excec_time_str = gtk_entry_get_text((GtkEntry *) ((add_click_data *) data)->excec_time);
 
     if (validate_only_numbers(period_str) ||
-        validate_only_numbers(excec_time_str))
+        validate_only_numbers(excec_time_str)) {
+        gtk_label_set_text(((add_click_data *) data)->feedback_text, "Period and exec time should be numbers ONLY!");
         return;
+    }
 
     gtk_list_store_append(GTK_LIST_STORE(((add_click_data *) data)->store), &iter);
     gtk_list_store_set(GTK_LIST_STORE(((add_click_data *) data)->store), &iter,
@@ -80,11 +85,13 @@ static void add_btn_clicked(GtkWidget *widget, gpointer data) {
                        LIST_TASK_EXECUTION_TIME, excec_time_str,
                        -1);
 
+
 }
 
 
-
 static void run_btn_clicked(GtkWidget *widget, gpointer data) {
+
+    gtk_label_set_text(((run_click_data *) data)->feedback_text, "");
 
     GtkListStore *list = ((run_click_data *) data)->store;
     GtkCheckButton *to_run_edf = (GtkCheckButton *) ((run_click_data *) data)->runEDF;
@@ -105,6 +112,10 @@ static void run_btn_clicked(GtkWidget *widget, gpointer data) {
         out = gtk_tree_model_iter_next(GTK_TREE_MODEL(list), &iter);
     }
 
+    if (size == 0) {
+        gtk_label_set_text(((run_click_data *) data)->feedback_text, "There should be at least one task selected!");
+    }
+
     out = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list), &iter);
     task_set set;
     set.tasks = calloc(size, sizeof(task));
@@ -121,7 +132,7 @@ static void run_btn_clicked(GtkWidget *widget, gpointer data) {
         int period = atoi(period_str);
         int exec_time = atoi(exec_time_str);
 
-        set.tasks[it].id = it+1;
+        set.tasks[it].id = it + 1;
         set.tasks[it].e = exec_time;
         set.tasks[it].p = period;
 
@@ -133,6 +144,12 @@ static void run_btn_clicked(GtkWidget *widget, gpointer data) {
     set.is_rm = gtk_toggle_button_get_active(&(to_run_rm->toggle_button));
     set.is_edf = gtk_toggle_button_get_active(&(to_run_edf->toggle_button));
     set.is_llf = gtk_toggle_button_get_active(&(to_run_llf->toggle_button));
+
+
+    if (!(set.is_rm || set.is_edf || set.is_llf)) {
+        gtk_label_set_text(((run_click_data *) data)->feedback_text, "There must be at least one algorithm selected!");
+        return;
+    }
 
     int single_slide = gtk_combo_box_get_active(mode) == 0;
 
@@ -200,11 +217,13 @@ static void init(int argc, char **argv) {
 
     create_list_view(renderer, column, &store, &list);
 
-    gtk_grid_attach(GTK_GRID (grid), list, 3, 0, 5, 4);
+    gtk_grid_attach(GTK_GRID (grid), list, 3, 0, 5, 7);
 
     GtkWidget *run_btn = gtk_button_new_with_label("RUN!");
     gtk_grid_attach(GTK_GRID (grid), run_btn, 0, 6, 3, 1);
 
+    GtkWidget *feedback = gtk_label_new("Task Period");
+    gtk_grid_attach(GTK_GRID (grid), feedback, 0, 7, 8, 1);
 
     add_click_data *add_data = (add_click_data *) malloc(sizeof(add_click_data));
 
@@ -212,6 +231,9 @@ static void init(int argc, char **argv) {
 
     add_data->excec_time = exec_time_entry;
     add_data->period = period_entry;
+
+
+    add_data->feedback_text = feedback;
 
     g_signal_connect(G_OBJECT(add_btn), "clicked", G_CALLBACK(add_btn_clicked), add_data);
 
@@ -223,6 +245,7 @@ static void init(int argc, char **argv) {
     run_data->runEDF = checkEDF;
     run_data->runLLF = checkLLF;
     run_data->combo = combo;
+    run_data->feedback_text = feedback;
 
 
     g_signal_connect(G_OBJECT(run_btn), "clicked", G_CALLBACK(run_btn_clicked), run_data);
