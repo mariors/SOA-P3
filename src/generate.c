@@ -186,12 +186,21 @@ void slide_schedulability(FILE *fp) {
 
 	fprintf(fp, "Under Rate Monotonic, $U = 0.5 < 0.6$. This task set is executable|not sure if executable");//TODO: ADD SCHEDULABLE? UNDER EACH.
 
+	fprintf(fp, "\\begin{itemize}\n");
+	fprintf(fp, "\\item RM: " + ((1)? "Is" : "Is not") + " schedulable\n");
+	fprintf(fp, "\\end{itemize}\n");
+	
 	fprintf(fp, "\\end{block}\n");
 	fprintf(fp, "\\begin{block}{EDF and LLF}\n");
 	fprintf(fp, "$U = \\sum^n_{i=1}{\\frac{C_i}{T_i}\\leq 1}$\n\n");
 
 	fprintf(fp, "Under EDF or LLF $U=0.8 < 1.0$ This task set is executable|not executable");//TODO: ADD SCHEDULABLE? UNDER EACH.
 
+	fprintf(fp, "\\begin{itemize}\n");
+	fprintf(fp, "\\item EDF: " + ((1)? "Is" : "Is not") + " schedulable\n");
+	fprintf(fp, "\\item LLF: " + ((1)? "Is" : "Is not") + " schedulable\n");
+	fprintf(fp, "\\end{itemize}\n");
+	
 	fprintf(fp, "\\end{block}\n");
 	fprintf(fp, "\\end{frame}\n");
 }
